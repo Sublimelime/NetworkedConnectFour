@@ -3,13 +3,7 @@ package serverpackage;
 public class CFServerGame {
 
     private int[][] board;
-    public static final int EMPTY = 0;
-    public static final int RED = 1;
-    public static final int BLACK = 2;
-    public static final int DRAW = 3;
-    public static final int RED_WINS = 4;
-    public static final int BLACK_WINS = 5;
-    public static final int PLAYING = 6;
+    public static final int EMPTY = 0, RED = 1, BLACK = 2, DRAW = 3, RED_WINS = 4, BLACK_WINS = 5, PLAYING = 6;
 
     public CFServerGame() {
 

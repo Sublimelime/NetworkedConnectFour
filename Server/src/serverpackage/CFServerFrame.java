@@ -18,7 +18,7 @@ public class CFServerFrame extends JFrame implements MouseListener {
 
     public CFServerFrame(int mode) {
 
-        super("Connect Four Game");
+        super("Connect Four Game - Server");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.mode = mode;
         setSize(440, 400);
