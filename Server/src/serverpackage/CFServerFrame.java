@@ -4,17 +4,22 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import javax.swing.JFrame;
 
 public class CFServerFrame extends JFrame implements MouseListener {
 
-    private int mode = 0;
-    private int turn = 0;
+    private int mode = 0, turn = 0;
     private CFServerGame game;
     private BufferedImage buffer;
 
-    public static final int ONE_PLAYER = 1;
-    public static final int TWO_PLAYER = 2;
+    protected static final int ONE_PLAYER = 1, TWO_PLAYER = 2;
+
+    private ServerSocket serverSocket1, serverSocket2;
+    private ObjectOutputStream outputStream1, outputStream2;
+    private Socket socket1, socket2;
 
     public CFServerFrame(int mode) {
 
@@ -29,6 +34,28 @@ public class CFServerFrame extends JFrame implements MouseListener {
 
         addMouseListener(this);
         setVisible(true);
+
+        //create the socket connection for the first client
+        try {
+            serverSocket1 = new ServerSocket(8765);
+            socket1 = serverSocket1.accept();
+            outputStream1 = new ObjectOutputStream(socket1.getOutputStream());
+            ObjectInputStream inputStream1 = new ObjectInputStream(socket1.getInputStream());
+
+            socket2 = serverSocket2.accept();
+            outputStream2 = new ObjectOutputStream(socket2.getOutputStream());
+            ObjectInputStream inputStream2 = new ObjectInputStream(socket2.getInputStream());
+        } catch (IOException e) {
+            System.err.println("Unable to create first connection:" + e.getMessage());
+        }
+
+        //create the socket connection for the second client
+        try {
+
+        } catch (IOException e) {
+            System.err.println("Unable to create second connection:" + e.getMessage());
+        }
+
     }
 
     @Override
