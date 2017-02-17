@@ -1,9 +1,10 @@
 package serverpackage;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import javax.swing.JFrame;
 
 public class CFServerFrame extends JFrame implements MouseListener {
 
@@ -30,6 +31,7 @@ public class CFServerFrame extends JFrame implements MouseListener {
         setVisible(true);
     }
 
+    @Override
     public void paint(Graphics rg) {
         // draws background to the buffer
         Graphics g = buffer.getGraphics();
@@ -41,49 +43,59 @@ public class CFServerFrame extends JFrame implements MouseListener {
                 int dr = r * 60 + 40;
                 int dc = c * 60 + 20;
 
-                if (game.getSpot(r, c) == CFServerGame.RED) {
-                    g.setColor(Color.RED);
-                    g.fillOval(dc, dr, 40, 40);
-                } else if (game.getSpot(r, c) == CFServerGame.BLACK) {
-                    g.setColor(Color.BLACK);
-                    g.fillOval(dc, dr, 40, 40);
-                } else {
-                    g.setColor(Color.WHITE);
-                    g.fillOval(dc, dr, 40, 40);
+                switch (game.getSpot(r, c)) {
+                    case CFServerGame.RED:
+                        g.setColor(Color.RED);
+                        g.fillOval(dc, dr, 40, 40);
+                        break;
+                    case CFServerGame.BLACK:
+                        g.setColor(Color.BLACK);
+                        g.fillOval(dc, dr, 40, 40);
+                        break;
+                    default:
+                        g.setColor(Color.WHITE);
+                        g.fillOval(dc, dr, 40, 40);
+                        break;
                 }
             }
         }
 
-        if (game.status() == CFServerGame.RED_WINS) {
-            g.setColor(Color.BLUE);
-            g.setFont(new Font("Courier New", Font.BOLD, 25));
-            g.drawString("RED WINS!", 20, 200);
-            g.drawString("(RIGHT CLICK TO RESTART)", 20, 250);
-        } else if (game.status() == CFServerGame.BLACK_WINS) {
-            g.setColor(Color.BLUE);
-            g.setFont(new Font("Courier New", Font.BOLD, 25));
-            g.drawString("BLACK WINS!", 20, 200);
-            g.drawString("(RIGHT CLICK TO RESTART)", 20, 250);
-
-        } else if (game.status() == CFServerGame.DRAW) {
-            g.setColor(Color.BLUE);
-            g.setFont(new Font("Courier New", Font.BOLD, 25));
-            g.drawString("TIE GAME.", 20, 200);
-            g.drawString("(RIGHT CLICK TO RESTART)", 20, 250);
-
+        switch (game.status()) {
+            case CFServerGame.RED_WINS:
+                g.setColor(Color.BLUE);
+                g.setFont(new Font("Courier New", Font.BOLD, 25));
+                g.drawString("RED WINS!", 20, 200);
+                g.drawString("(RIGHT CLICK TO RESTART)", 20, 250);
+                break;
+            case CFServerGame.BLACK_WINS:
+                g.setColor(Color.BLUE);
+                g.setFont(new Font("Courier New", Font.BOLD, 25));
+                g.drawString("BLACK WINS!", 20, 200);
+                g.drawString("(RIGHT CLICK TO RESTART)", 20, 250);
+                break;
+            case CFServerGame.DRAW:
+                g.setColor(Color.BLUE);
+                g.setFont(new Font("Courier New", Font.BOLD, 25));
+                g.drawString("TIE GAME.", 20, 200);
+                g.drawString("(RIGHT CLICK TO RESTART)", 20, 250);
+                break;
+            default:
+                break;
         }
 
         rg.drawImage(buffer, 0, 0, null);
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
 
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
 
         int x = e.getX();
-        boolean changeTurns = false;
+        boolean changeTurns;
 
         if (game.status() == CFServerGame.PLAYING) {
             if (x >= 20 && x < 59) {
@@ -146,14 +158,17 @@ public class CFServerFrame extends JFrame implements MouseListener {
         repaint();
     }
 
+    @Override
     public void mouseClicked(MouseEvent e) {
 
     }
 
+    @Override
     public void mouseEntered(MouseEvent e) {
 
     }
 
+    @Override
     public void mouseExited(MouseEvent e) {
 
     }

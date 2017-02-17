@@ -21,6 +21,7 @@ public class CFServerGame {
         }
     }
 
+    @Override
     public Object clone() {
         CFServerGame clone = new CFServerGame();
         for (int c = 0; c < 7; c++) {
