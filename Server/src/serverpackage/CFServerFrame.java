@@ -19,6 +19,7 @@ public class CFServerFrame extends JFrame implements MouseListener {
 
     private ServerSocket serverSocket1, serverSocket2;
     private ObjectOutputStream outputStream1, outputStream2;
+    private ObjectInputStream inputStream1, inputStream2;
     private Socket socket1, socket2;
 
     public CFServerFrame(int mode) {
@@ -38,22 +39,18 @@ public class CFServerFrame extends JFrame implements MouseListener {
         //create the socket connection for the first client
         try {
             serverSocket1 = new ServerSocket(8765);
+
+            //setup connection 1
             socket1 = serverSocket1.accept();
             outputStream1 = new ObjectOutputStream(socket1.getOutputStream());
-            ObjectInputStream inputStream1 = new ObjectInputStream(socket1.getInputStream());
+            inputStream1 = new ObjectInputStream(socket1.getInputStream());
 
+            //setup connection 2
             socket2 = serverSocket2.accept();
             outputStream2 = new ObjectOutputStream(socket2.getOutputStream());
-            ObjectInputStream inputStream2 = new ObjectInputStream(socket2.getInputStream());
+            inputStream2 = new ObjectInputStream(socket2.getInputStream());
         } catch (IOException e) {
-            System.err.println("Unable to create first connection:" + e.getMessage());
-        }
-
-        //create the socket connection for the second client
-        try {
-
-        } catch (IOException e) {
-            System.err.println("Unable to create second connection:" + e.getMessage());
+            System.err.println("Unable to create connection:" + e.getMessage());
         }
 
     }
