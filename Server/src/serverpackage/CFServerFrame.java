@@ -2,14 +2,13 @@ package serverpackage;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import javax.swing.JFrame;
 
-public class CFServerFrame extends JFrame implements MouseListener {
+public class CFServerFrame extends JFrame {
 
     private int mode = 0, turn = 0;
     private CFServerGame game;
@@ -33,7 +32,6 @@ public class CFServerFrame extends JFrame implements MouseListener {
         this.mode = mode;
         turn = CFServerGame.RED;
 
-        addMouseListener(this);
         setVisible(true);
 
         //create the socket connection for the first client
@@ -110,12 +108,6 @@ public class CFServerFrame extends JFrame implements MouseListener {
         rg.drawImage(buffer, 0, 0, null);
     }
 
-    @Override
-    public void mousePressed(MouseEvent e) {
-
-    }
-
-    @Override
     public void mouseReleased(MouseEvent e) {
 
         int x = e.getX();
@@ -182,18 +174,4 @@ public class CFServerFrame extends JFrame implements MouseListener {
         repaint();
     }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
 }
