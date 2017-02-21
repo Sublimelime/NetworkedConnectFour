@@ -1,8 +1,10 @@
+package clientpackage;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import javax.swing.JFrame;
 
 public class CFClientFrame extends JFrame implements MouseListener {
 
