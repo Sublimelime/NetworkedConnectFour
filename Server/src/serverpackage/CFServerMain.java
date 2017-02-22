@@ -1,14 +1,11 @@
 package serverpackage;
 
-import java.util.Scanner;
-
 public class CFServerMain {
 
     public static void main(String[] args) {
         System.out.println("Running the Server.");
-        Scanner keyboard = new Scanner(System.in);
 
-        int numberOfPlayers = 0;
+        /*int numberOfPlayers = 0;
         System.out.println("-Graphical Connect Four Game-");
 
         do {
@@ -19,7 +16,7 @@ public class CFServerMain {
                 System.out.println("Error Invalid, number of players. Please try again");
             }
         } while (numberOfPlayers < 1 || numberOfPlayers > 2);
-
-        new CFServerFrame(numberOfPlayers);
+         */
+        new CFServerFrame(2); //always two players
     }
 }

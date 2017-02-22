@@ -16,6 +16,7 @@ public class CFClientMain {
             }
         } while (numberOfPlayers < 1 || numberOfPlayers > 2);
          */
+
         new CFClientFrame(2);
     }
 }
