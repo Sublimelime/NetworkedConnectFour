@@ -16,7 +16,7 @@ public class CFServerFrame extends JFrame {
 
     protected static final int ONE_PLAYER = 1, TWO_PLAYER = 2;
 
-    private ServerSocket serverSocket1, serverSocket2;
+    private ServerSocket serverSocket1;
     private ObjectOutputStream outputStream1, outputStream2;
     private ObjectInputStream inputStream1, inputStream2;
     private Socket socket1, socket2;
@@ -44,7 +44,7 @@ public class CFServerFrame extends JFrame {
             inputStream1 = new ObjectInputStream(socket1.getInputStream());
 
             //setup connection 2
-            socket2 = serverSocket2.accept();
+            socket2 = serverSocket1.accept();
             outputStream2 = new ObjectOutputStream(socket2.getOutputStream());
             inputStream2 = new ObjectInputStream(socket2.getInputStream());
         } catch (IOException e) {
