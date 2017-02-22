@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.Socket;
 import javax.swing.JFrame;
 
 public class CFClientFrame extends JFrame implements MouseListener {
@@ -15,10 +17,13 @@ public class CFClientFrame extends JFrame implements MouseListener {
 
     public static final int ONE_PLAYER = 1;
     public static final int TWO_PLAYER = 2;
+    ObjectInputStream inputStream1;
+    ObjectOutputStream outputStream1;
+    Socket socket;
 
     public CFClientFrame(int mode) {
 
-        super("Connect Four Game");
+        super("Connect Four Game - Client");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.mode = mode;
         setSize(440, 400);
@@ -29,6 +34,29 @@ public class CFClientFrame extends JFrame implements MouseListener {
 
         addMouseListener(this);
         setVisible(true);
+
+        try {
+
+            //setup connection 1
+            socket = new Socket("127.0.0.1", 8765);
+            outputStream1 = new ObjectOutputStream(socket.getOutputStream());
+            inputStream1 = new ObjectInputStream(socket.getInputStream());
+
+            System.out.println("Setup streams to server.");
+
+        } catch (IOException e) {
+            System.err.println("Unable to create connection:" + e.getMessage());
+        }
+
+        //ping server
+        try {
+            System.out.println("Got ping from server: " + inputStream1.readObject());
+            outputStream1.writeObject(new String("Polo")); //send it back polo
+        } catch (IOException e) {
+            System.err.println("Unable to ping server: " + e.getMessage());
+        } catch (ClassNotFoundException c) {
+            System.out.println("Misunderstood data from server: " + c.getMessage());
+        }
     }
 
     public void paint(Graphics rg) {

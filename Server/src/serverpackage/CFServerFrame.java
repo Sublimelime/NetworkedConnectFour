@@ -39,16 +39,41 @@ public class CFServerFrame extends JFrame {
             serverSocket1 = new ServerSocket(8765);
 
             //setup connection 1
+            System.out.println("Waiting for client 1.");
             socket1 = serverSocket1.accept();
             outputStream1 = new ObjectOutputStream(socket1.getOutputStream());
             inputStream1 = new ObjectInputStream(socket1.getInputStream());
 
+            System.out.println("Setup streams for client 1.");
+
             //setup connection 2
+            System.out.println("Waiting for client 2.");
             socket2 = serverSocket1.accept();
             outputStream2 = new ObjectOutputStream(socket2.getOutputStream());
             inputStream2 = new ObjectInputStream(socket2.getInputStream());
+
+            System.out.println("Setup streams for client 2.");
         } catch (IOException e) {
             System.err.println("Unable to create connection:" + e.getMessage());
+        }
+
+        //ping both clients
+        try {
+            outputStream1.writeObject(new String("Marco"));
+            System.out.println("Got ping back from client 1: " + inputStream1.readObject());
+        } catch (IOException e) {
+            System.err.println("Unable to ping client 1: " + e.getMessage());
+        } catch (ClassNotFoundException c) {
+            System.out.println("Misunderstood data from Client 1: " + c.getMessage());
+        }
+
+        try {
+            outputStream2.writeObject(new String("Marco"));
+            System.out.println("Got ping back from client 2: " + inputStream2.readObject());
+        } catch (IOException e) {
+            System.err.println("Unable to ping client 2: " + e.getMessage());
+        } catch (ClassNotFoundException c) {
+            System.out.println("Misunderstood data from Client 2: " + c.getMessage());
         }
 
     }
