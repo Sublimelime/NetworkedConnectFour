@@ -9,7 +9,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import javax.swing.JFrame;
 
-public class CFServerFrame extends JFrame implements MouseListener {
+public class CFServerFrame extends JFrame implements MouseListener, Runnable {
 
     private int mode = 0, turn = 0;
     private CFServerGame game;
@@ -75,6 +75,20 @@ public class CFServerFrame extends JFrame implements MouseListener {
             System.err.println("Unable to ping client 2: " + e.getMessage());
         } catch (ClassNotFoundException c) {
             System.out.println("Misunderstood data from Client 2: " + c.getMessage());
+        }
+
+    }
+
+    int currentTurn = CFServerGame.RED; //1:red,2:black
+
+    @Override
+    public void run() {
+        //flips back and forth between recieving and sending client info.
+        if (currentTurn == CFServerGame.RED) {
+            System.out.println("Current turn is red.");
+
+        } else if (currentTurn == CFServerGame.BLACK) {
+
         }
 
     }
