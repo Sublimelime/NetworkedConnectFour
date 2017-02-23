@@ -36,7 +36,6 @@ public class CFClientFrame extends JFrame implements MouseListener {
         setVisible(true);
 
         try {
-
             //setup connection 1
             socket = new Socket("127.0.0.1", 8765);
             outputStream1 = new ObjectOutputStream(socket.getOutputStream());
@@ -112,66 +111,26 @@ public class CFClientFrame extends JFrame implements MouseListener {
     public void mouseReleased(MouseEvent e) {
 
         int x = e.getX();
-        boolean changeTurns = false;
-
         if (game.status() == CFClientGame.PLAYING) {
             if (x >= 20 && x < 59) {
-                changeTurns = game.dropPiece(0, turn);
+                game.dropPiece(0, turn);
             } else if (x >= 80 && x < 129) {
-                changeTurns = game.dropPiece(1, turn);
+                game.dropPiece(1, turn);
             } else if (x >= 140 && x < 179) {
-                changeTurns = game.dropPiece(2, turn);
+                game.dropPiece(2, turn);
             } else if (x >= 200 && x < 239) {
-                changeTurns = game.dropPiece(3, turn);
+                game.dropPiece(3, turn);
             } else if (x >= 260 && x < 299) {
-                changeTurns = game.dropPiece(4, turn);
+                game.dropPiece(4, turn);
             } else if (x >= 320 && x < 359) {
-                changeTurns = game.dropPiece(5, turn);
+                game.dropPiece(5, turn);
             } else if (x >= 380 && x < 419) {
-                changeTurns = game.dropPiece(6, turn);
+                game.dropPiece(6, turn);
             } else {
                 return;
             }
 
-            if (mode == TWO_PLAYER) {
-                if (changeTurns == true) {
-                    if (turn == CFClientGame.RED) {
-                        turn = CFClientGame.BLACK;
-                    } else {
-                        turn = CFClientGame.RED;
-                    }
-                }
-            } else {
-                if (game.status() == CFClientGame.PLAYING && changeTurns) {
-                    for (int c = 0; c < 7; c++) {
-                        CFClientGame clone = (CFClientGame) game.clone();
-                        clone.dropPiece(c, CFClientGame.BLACK);
-                        if (clone.status() == CFClientGame.BLACK_WINS) {
-                            game.dropPiece(c, CFClientGame.BLACK);
-                            repaint();
-                            return;
-                        }
-                    }
-
-                    for (int c = 0; c < 7; c++) {
-                        CFClientGame clone = (CFClientGame) game.clone();
-                        clone.dropPiece(c, CFClientGame.RED);
-                        if (clone.status() == CFClientGame.RED_WINS) {
-                            game.dropPiece(c, CFClientGame.BLACK);
-                            repaint();
-                            return;
-                        }
-                    }
-                    while (game.dropPiece((int) (Math.random() * 7), CFClientGame.BLACK) == false);
-                }
-            }
-        } else {
-            if (e.getButton() == MouseEvent.BUTTON3) {
-                turn = CFClientGame.RED;
-                game = new CFClientGame();
-            }
         }
-
         repaint();
     }
 

@@ -2,13 +2,14 @@ package serverpackage;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import javax.swing.JFrame;
 
-public class CFServerFrame extends JFrame {
+public class CFServerFrame extends JFrame implements MouseListener {
 
     private int mode = 0, turn = 0;
     private CFServerGame game;
@@ -79,6 +80,22 @@ public class CFServerFrame extends JFrame {
     }
 
     @Override
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+
+    @Override
     public void paint(Graphics rg) {
         // draws background to the buffer
         Graphics g = buffer.getGraphics();
@@ -134,69 +151,10 @@ public class CFServerFrame extends JFrame {
     }
 
     public void mouseReleased(MouseEvent e) {
-
-        int x = e.getX();
-        boolean changeTurns;
-
-        if (game.status() == CFServerGame.PLAYING) {
-            if (x >= 20 && x < 59) {
-                changeTurns = game.dropPiece(0, turn);
-            } else if (x >= 80 && x < 129) {
-                changeTurns = game.dropPiece(1, turn);
-            } else if (x >= 140 && x < 179) {
-                changeTurns = game.dropPiece(2, turn);
-            } else if (x >= 200 && x < 239) {
-                changeTurns = game.dropPiece(3, turn);
-            } else if (x >= 260 && x < 299) {
-                changeTurns = game.dropPiece(4, turn);
-            } else if (x >= 320 && x < 359) {
-                changeTurns = game.dropPiece(5, turn);
-            } else if (x >= 380 && x < 419) {
-                changeTurns = game.dropPiece(6, turn);
-            } else {
-                return;
-            }
-
-            if (mode == TWO_PLAYER) {
-                if (changeTurns == true) {
-                    if (turn == CFServerGame.RED) {
-                        turn = CFServerGame.BLACK;
-                    } else {
-                        turn = CFServerGame.RED;
-                    }
-                }
-            } else {
-                if (game.status() == CFServerGame.PLAYING && changeTurns) {
-                    for (int c = 0; c < 7; c++) {
-                        CFServerGame clone = (CFServerGame) game.clone();
-                        clone.dropPiece(c, CFServerGame.BLACK);
-                        if (clone.status() == CFServerGame.BLACK_WINS) {
-                            game.dropPiece(c, CFServerGame.BLACK);
-                            repaint();
-                            return;
-                        }
-                    }
-
-                    for (int c = 0; c < 7; c++) {
-                        CFServerGame clone = (CFServerGame) game.clone();
-                        clone.dropPiece(c, CFServerGame.RED);
-                        if (clone.status() == CFServerGame.RED_WINS) {
-                            game.dropPiece(c, CFServerGame.BLACK);
-                            repaint();
-                            return;
-                        }
-                    }
-                    while (game.dropPiece((int) (Math.random() * 7), CFServerGame.BLACK) == false);
-                }
-            }
-        } else {
-            if (e.getButton() == MouseEvent.BUTTON3) {
-                turn = CFServerGame.RED;
-                game = new CFServerGame();
-            }
+        if (e.getButton() == MouseEvent.BUTTON3) {
+            turn = CFServerGame.RED;
+            game = new CFServerGame();
         }
-
         repaint();
     }
-
 }
