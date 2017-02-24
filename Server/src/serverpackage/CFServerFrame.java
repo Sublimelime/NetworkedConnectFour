@@ -84,11 +84,24 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
     @Override
     public void run() {
         //flips back and forth between recieving and sending client info.
-        if (currentTurn == CFServerGame.RED) {
-            System.out.println("Current turn is red.");
 
-        } else if (currentTurn == CFServerGame.BLACK) {
+        while (true) {
+            if (currentTurn == CFServerGame.RED) {
+                System.out.println("Current turn is red. Waiting for red move.");
+                currentTurn = CFServerGame.BLACK;
+                try {
+                    outputStream1.writeChars("Red's turn, waiting for you.");
+                    outputStream1.writeBoolean(game.dropPiece(inputStream1.readInt(), CFServerGame.RED)); //get move and do it
+                    outputStream1.writeInt(game.status()); //send status
 
+                } catch (IOException e) {
+                    System.out.println("Failed to receive move/send status." + e.getMessage());
+                }
+
+            } else if (currentTurn == CFServerGame.BLACK) {
+                System.out.println("Current turn is black. Waiting for black move.");
+                currentTurn = CFServerGame.RED;
+            }
         }
 
     }

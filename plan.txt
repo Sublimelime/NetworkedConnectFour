@@ -1,0 +1,7 @@
+﻿Server asks red for move
+Server gets move from red
+sends red success and game status
+red interprets this
+Server asks for black move
+gets move from black
+sends success and game status

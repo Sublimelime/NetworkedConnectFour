@@ -8,7 +8,7 @@ import java.io.*;
 import java.net.Socket;
 import javax.swing.JFrame;
 
-public class CFClientFrame extends JFrame implements MouseListener {
+public class CFClientFrame extends JFrame implements MouseListener, Runnable {
 
     private int mode = 0;
     private int turn = 0;
@@ -56,6 +56,25 @@ public class CFClientFrame extends JFrame implements MouseListener {
         } catch (ClassNotFoundException c) {
             System.out.println("Misunderstood data from server: " + c.getMessage());
         }
+    }
+
+    @Override
+    public void run() {
+        //flips back and forth between recieving and sending client info.
+
+        while (true) {
+
+            try {
+                outputStream1.writeChars("Red's turn, waiting for you."); //todo finish this
+                outputStream1.writeBoolean(game.dropPiece(inputStream1.readInt(), CFClientGame.RED)); //get move and do it
+                outputStream1.writeInt(game.status()); //send status
+
+            } catch (IOException e) {
+                System.out.println("Failed to receive move/send status." + e.getMessage());
+            }
+
+        }
+
     }
 
     public void paint(Graphics rg) {
