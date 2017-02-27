@@ -1,7 +1,14 @@
-﻿Server asks red for move
+
+Server asks red for move, if not won
 Server gets move from red
-sends red success and game status
+sends red success 
 red interprets this
+if won, send win to black as well
 Server asks for black move
 gets move from black
-sends success and game status
+sends success
+
+int
+string
+bool
+int

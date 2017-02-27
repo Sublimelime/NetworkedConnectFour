@@ -10,8 +10,7 @@ import javax.swing.JFrame;
 
 public class CFClientFrame extends JFrame implements MouseListener, Runnable {
 
-    private int mode = 0;
-    private int turn = 0;
+    private int mode = 0, turn = 0, lastMove = -1;
     private CFClientGame game;
     private BufferedImage buffer;
 
@@ -54,8 +53,11 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
         } catch (IOException e) {
             System.err.println("Unable to ping server: " + e.getMessage());
         } catch (ClassNotFoundException c) {
-            System.out.println("Misunderstood data from server: " + c.getMessage());
+            System.err.println("Misunderstood data from server: " + c.getMessage());
         }
+
+        Thread t = new Thread(this);
+        t.start();
     }
 
     @Override
@@ -65,14 +67,23 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
         while (true) {
 
             try {
-                outputStream1.writeChars("Red's turn, waiting for you."); //todo finish this
-                outputStream1.writeBoolean(game.dropPiece(inputStream1.readInt(), CFClientGame.RED)); //get move and do it
-                outputStream1.writeInt(game.status()); //send status
+                System.out.println("Waiting for message from server...");
+
+                System.out.println(inputStream1.readObject().toString()); //print out the received message
+                while (lastMove == -1) { //wait for the player to make a move
+                    Thread.sleep(10);
+                }
+                outputStream1.writeInt(lastMove);
+                lastMove = -1; //invalidate the var again
 
             } catch (IOException e) {
-                System.out.println("Failed to receive move/send status." + e.getMessage());
+                System.err.println("Failed to send or receive message to/from server." + e.getMessage());
+            } catch (ClassNotFoundException ignored) {
+            } catch (InterruptedException i) {
+                System.err.println("Cannot sleep thread. " + i.getMessage());
             }
 
+            repaint();
         }
 
     }
@@ -133,18 +144,25 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
         if (game.status() == CFClientGame.PLAYING) {
             if (x >= 20 && x < 59) {
                 game.dropPiece(0, turn);
+                lastMove = 0;
             } else if (x >= 80 && x < 129) {
                 game.dropPiece(1, turn);
+                lastMove = 1;
             } else if (x >= 140 && x < 179) {
                 game.dropPiece(2, turn);
+                lastMove = 2;
             } else if (x >= 200 && x < 239) {
                 game.dropPiece(3, turn);
+                lastMove = 3;
             } else if (x >= 260 && x < 299) {
                 game.dropPiece(4, turn);
+                lastMove = 4;
             } else if (x >= 320 && x < 359) {
                 game.dropPiece(5, turn);
+                lastMove = 5;
             } else if (x >= 380 && x < 419) {
                 game.dropPiece(6, turn);
+                lastMove = 6;
             } else {
                 return;
             }

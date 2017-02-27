@@ -76,6 +76,8 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
         } catch (ClassNotFoundException c) {
             System.out.println("Misunderstood data from Client 2: " + c.getMessage());
         }
+        Thread t = new Thread(this);
+        t.start();
 
     }
 
@@ -86,21 +88,28 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
         //flips back and forth between recieving and sending client info.
 
         while (true) {
-            if (currentTurn == CFServerGame.RED) {
+            if (currentTurn == CFServerGame.RED && game.status() == CFServerGame.PLAYING) {
                 System.out.println("Current turn is red. Waiting for red move.");
                 currentTurn = CFServerGame.BLACK;
                 try {
                     outputStream1.writeChars("Red's turn, waiting for you.");
-                    outputStream1.writeBoolean(game.dropPiece(inputStream1.readInt(), CFServerGame.RED)); //get move and do it
-                    outputStream1.writeInt(game.status()); //send status
+                    outputStream1.writeBoolean(game.dropPiece(inputStream1.readInt(), CFServerGame.RED)); //get move and do it, send back success
 
                 } catch (IOException e) {
                     System.out.println("Failed to receive move/send status." + e.getMessage());
                 }
 
-            } else if (currentTurn == CFServerGame.BLACK) {
+            } else if (currentTurn == CFServerGame.BLACK && game.status() == CFServerGame.PLAYING) {
                 System.out.println("Current turn is black. Waiting for black move.");
                 currentTurn = CFServerGame.RED;
+
+                try {
+                    outputStream2.writeChars("Black's turn, waiting for you.");
+                    outputStream2.writeBoolean(game.dropPiece(inputStream2.readInt(), CFServerGame.BLACK)); //get move and do it, send back success
+
+                } catch (IOException e) {
+                    System.out.println("Failed to receive move/send status." + e.getMessage());
+                }
             }
         }
 
