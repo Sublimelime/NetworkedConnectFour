@@ -93,7 +93,10 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
                 currentTurn = CFServerGame.BLACK;
                 try {
                     outputStream1.writeChars("Red's turn, waiting for you.");
-                    outputStream1.writeBoolean(game.dropPiece(inputStream1.readInt(), CFServerGame.RED)); //get move and do it, send back success
+                    int position = inputStream1.readInt();
+                    outputStream1.writeBoolean(game.dropPiece(position, CFServerGame.RED)); //get move and do it, send back success
+                    outputStream1.writeInt(position);
+                    outputStream1.writeInt(CFServerGame.RED);
 
                 } catch (IOException e) {
                     System.out.println("Failed to receive move/send status." + e.getMessage());
@@ -105,7 +108,10 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
 
                 try {
                     outputStream2.writeChars("Black's turn, waiting for you.");
-                    outputStream2.writeBoolean(game.dropPiece(inputStream2.readInt(), CFServerGame.BLACK)); //get move and do it, send back success
+                    int position = inputStream2.readInt();
+                    outputStream2.writeBoolean(game.dropPiece(position, CFServerGame.BLACK)); //get move and do it, send back success
+                    outputStream2.writeInt(position);
+                    outputStream2.writeInt(CFServerGame.BLACK);
 
                 } catch (IOException e) {
                     System.out.println("Failed to receive move/send status." + e.getMessage());

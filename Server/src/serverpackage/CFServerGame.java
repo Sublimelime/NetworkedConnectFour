@@ -40,7 +40,7 @@ public class CFServerGame {
         return false;
     }
 
-    public int status() {
+    public int status() { //todo make new not-started status
         // horizontal
         for (int r = 0; r < 6; r++) {
             for (int c = 0; c <= 3; c++) {

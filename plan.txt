@@ -1,14 +1,9 @@
 
 Server asks red for move, if not won
 Server gets move from red
-sends red success 
-red interprets this
-if won, send win to black as well
+sends red success
+if won, send win to black as well, else sends move of red to update black's board
 Server asks for black move
 gets move from black
-sends success
-
-int
-string
-bool
-int
+sends success to black, 
+move to red

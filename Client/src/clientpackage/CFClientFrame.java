@@ -69,7 +69,15 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
             try {
                 System.out.println("Waiting for message from server...");
 
-                System.out.println(inputStream1.readObject().toString()); //print out the received message
+                Object received = inputStream1.readObject();
+                if (received instanceof String) {
+                    System.out.println(received.toString());
+                } else if (received instanceof Boolean) {
+                    if (received.equals(Boolean.TRUE)) {
+                        game.dropPiece(inputStream1.readInt(), inputStream1.readInt()); //get two ints, place and person
+                    }
+                }
+
                 while (lastMove == -1) { //wait for the player to make a move
                     Thread.sleep(10);
                 }
@@ -143,25 +151,18 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
         int x = e.getX();
         if (game.status() == CFClientGame.PLAYING) {
             if (x >= 20 && x < 59) {
-                game.dropPiece(0, turn);
                 lastMove = 0;
             } else if (x >= 80 && x < 129) {
-                game.dropPiece(1, turn);
                 lastMove = 1;
             } else if (x >= 140 && x < 179) {
-                game.dropPiece(2, turn);
                 lastMove = 2;
             } else if (x >= 200 && x < 239) {
-                game.dropPiece(3, turn);
                 lastMove = 3;
             } else if (x >= 260 && x < 299) {
-                game.dropPiece(4, turn);
                 lastMove = 4;
             } else if (x >= 320 && x < 359) {
-                game.dropPiece(5, turn);
                 lastMove = 5;
             } else if (x >= 380 && x < 419) {
-                game.dropPiece(6, turn);
                 lastMove = 6;
             } else {
                 return;
