@@ -16,8 +16,8 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
 
     public static final int ONE_PLAYER = 1;
     public static final int TWO_PLAYER = 2;
-    ObjectInputStream inputStream1;
-    ObjectOutputStream outputStream1;
+    ObjectInputStream inputStream;
+    ObjectOutputStream outputStream;
     Socket socket;
 
     public CFClientFrame(int mode) {
@@ -26,6 +26,7 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.mode = mode;
         setSize(440, 400);
+        setResizable(false);
         buffer = new BufferedImage(440, 400, BufferedImage.TYPE_4BYTE_ABGR);
         game = new CFClientGame();
         this.mode = mode;
@@ -37,8 +38,8 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
         try {
             //setup connection 1
             socket = new Socket("127.0.0.1", 8765);
-            outputStream1 = new ObjectOutputStream(socket.getOutputStream());
-            inputStream1 = new ObjectInputStream(socket.getInputStream());
+            outputStream = new ObjectOutputStream(socket.getOutputStream());
+            inputStream = new ObjectInputStream(socket.getInputStream());
 
             System.out.println("Setup streams to server.");
 
@@ -48,8 +49,10 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
 
         //ping server
         try {
-            System.out.println("Got ping from server: " + inputStream1.readObject());
-            outputStream1.writeObject(new String("Polo")); //send it back polo
+            String returned = inputStream.readObject().toString();
+            System.out.println("Got ping from server: " + returned);
+            setTitle(getTitle() + " - " + returned);
+            outputStream.writeObject("Polo"); //send it back polo
         } catch (IOException e) {
             System.err.println("Unable to ping server: " + e.getMessage());
         } catch (ClassNotFoundException c) {
@@ -69,20 +72,21 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
             try {
                 System.out.println("Waiting for message from server...");
 
-                Object received = inputStream1.readObject();
+                Object received = inputStream.readObject();
                 if (received instanceof String) {
                     System.out.println(received.toString());
                 } else if (received instanceof Boolean) {
                     if (received.equals(Boolean.TRUE)) {
-                        game.dropPiece(inputStream1.readInt(), inputStream1.readInt()); //get two ints, place and person
+                        game.dropPiece(inputStream.readInt(), inputStream.readInt()); //get two ints, place and person
                     }
                 }
-
+                System.out.println("Waiting for the player to make a move.");
                 while (lastMove == -1) { //wait for the player to make a move
                     Thread.sleep(10);
                 }
-                outputStream1.writeInt(lastMove);
+                outputStream.writeInt(lastMove);
                 lastMove = -1; //invalidate the var again
+                System.out.println("Move made, sent back to server.");
 
             } catch (IOException e) {
                 System.err.println("Failed to send or receive message to/from server." + e.getMessage());
@@ -150,6 +154,7 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
 
         int x = e.getX();
         if (game.status() == CFClientGame.PLAYING) {
+            System.out.println("Click received");
             if (x >= 20 && x < 59) {
                 lastMove = 0;
             } else if (x >= 80 && x < 129) {

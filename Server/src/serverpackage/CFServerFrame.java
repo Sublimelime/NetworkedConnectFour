@@ -18,8 +18,8 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
     protected static final int ONE_PLAYER = 1, TWO_PLAYER = 2;
 
     private ServerSocket serverSocket1;
-    private ObjectOutputStream outputStream1, outputStream2;
-    private ObjectInputStream inputStream1, inputStream2;
+    private ObjectOutputStream outputStreamRed, outputStreamBlack;
+    private ObjectInputStream inputStreamRed, inputStreamBlack;
     private Socket socket1, socket2;
 
     public CFServerFrame(int mode) {
@@ -28,6 +28,7 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.mode = mode;
         setSize(440, 400);
+        setResizable(false);
         buffer = new BufferedImage(440, 400, BufferedImage.TYPE_4BYTE_ABGR);
         game = new CFServerGame();
         this.mode = mode;
@@ -42,16 +43,16 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
             //setup connection 1
             System.out.println("Waiting for client 1.");
             socket1 = serverSocket1.accept();
-            outputStream1 = new ObjectOutputStream(socket1.getOutputStream());
-            inputStream1 = new ObjectInputStream(socket1.getInputStream());
+            outputStreamRed = new ObjectOutputStream(socket1.getOutputStream());
+            inputStreamRed = new ObjectInputStream(socket1.getInputStream());
 
             System.out.println("Setup streams for client 1.");
 
             //setup connection 2
             System.out.println("Waiting for client 2.");
             socket2 = serverSocket1.accept();
-            outputStream2 = new ObjectOutputStream(socket2.getOutputStream());
-            inputStream2 = new ObjectInputStream(socket2.getInputStream());
+            outputStreamBlack = new ObjectOutputStream(socket2.getOutputStream());
+            inputStreamBlack = new ObjectInputStream(socket2.getInputStream());
 
             System.out.println("Setup streams for client 2.");
         } catch (IOException e) {
@@ -60,8 +61,8 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
 
         //ping both clients
         try {
-            outputStream1.writeObject(new String("Marco"));
-            System.out.println("Got ping back from client 1: " + inputStream1.readObject());
+            outputStreamRed.writeObject(new String("Red"));
+            System.out.println("Got ping back from client 1: " + inputStreamRed.readObject());
         } catch (IOException e) {
             System.err.println("Unable to ping client 1: " + e.getMessage());
         } catch (ClassNotFoundException c) {
@@ -69,8 +70,8 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
         }
 
         try {
-            outputStream2.writeObject(new String("Marco"));
-            System.out.println("Got ping back from client 2: " + inputStream2.readObject());
+            outputStreamBlack.writeObject(new String("Black"));
+            System.out.println("Got ping back from client 2: " + inputStreamBlack.readObject());
         } catch (IOException e) {
             System.err.println("Unable to ping client 2: " + e.getMessage());
         } catch (ClassNotFoundException c) {
@@ -92,11 +93,12 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
                 System.out.println("Current turn is red. Waiting for red move.");
                 currentTurn = CFServerGame.BLACK;
                 try {
-                    outputStream1.writeChars("Red's turn, waiting for you.");
-                    int position = inputStream1.readInt();
-                    outputStream1.writeBoolean(game.dropPiece(position, CFServerGame.RED)); //get move and do it, send back success
-                    outputStream1.writeInt(position);
-                    outputStream1.writeInt(CFServerGame.RED);
+                    outputStreamRed.writeObject("Red's turn, waiting for you.");
+                    int position = inputStreamRed.readInt();
+                    System.out.println("Got position.");
+                    outputStreamRed.writeBoolean(game.dropPiece(position, CFServerGame.RED)); //get move and do it, send back success
+                    outputStreamRed.writeInt(position);
+                    outputStreamRed.writeInt(CFServerGame.RED);
 
                 } catch (IOException e) {
                     System.out.println("Failed to receive move/send status." + e.getMessage());
@@ -107,11 +109,11 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
                 currentTurn = CFServerGame.RED;
 
                 try {
-                    outputStream2.writeChars("Black's turn, waiting for you.");
-                    int position = inputStream2.readInt();
-                    outputStream2.writeBoolean(game.dropPiece(position, CFServerGame.BLACK)); //get move and do it, send back success
-                    outputStream2.writeInt(position);
-                    outputStream2.writeInt(CFServerGame.BLACK);
+                    outputStreamBlack.writeObject("Black's turn, waiting for you.");
+                    int position = inputStreamBlack.readInt();
+                    outputStreamBlack.writeBoolean(game.dropPiece(position, CFServerGame.BLACK)); //get move and do it, send back success
+                    outputStreamBlack.writeInt(position);
+                    outputStreamBlack.writeInt(CFServerGame.BLACK);
 
                 } catch (IOException e) {
                     System.out.println("Failed to receive move/send status." + e.getMessage());
