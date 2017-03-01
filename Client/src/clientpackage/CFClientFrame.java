@@ -77,14 +77,14 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
                     System.out.println(received.toString());
                 } else if (received instanceof Boolean) {
                     if (received.equals(Boolean.TRUE)) {
-                        game.dropPiece(inputStream.readInt(), inputStream.readInt()); //get two ints, place and person
+                        game.dropPiece((int) inputStream.readObject(), (int) inputStream.readObject()); //get two ints, place and person
                     }
                 }
                 System.out.println("Waiting for the player to make a move.");
                 while (lastMove == -1) { //wait for the player to make a move
                     Thread.sleep(10);
                 }
-                outputStream.writeInt(lastMove);
+                outputStream.writeObject(lastMove);
                 lastMove = -1; //invalidate the var again
                 System.out.println("Move made, sent back to server.");
 

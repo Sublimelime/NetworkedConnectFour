@@ -94,14 +94,15 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
                 currentTurn = CFServerGame.BLACK;
                 try {
                     outputStreamRed.writeObject("Red's turn, waiting for you.");
-                    int position = inputStreamRed.readInt();
+                    int position = (int) inputStreamRed.readObject();
                     System.out.println("Got position.");
-                    outputStreamRed.writeBoolean(game.dropPiece(position, CFServerGame.RED)); //get move and do it, send back success
-                    outputStreamRed.writeInt(position);
-                    outputStreamRed.writeInt(CFServerGame.RED);
+                    outputStreamRed.writeObject(game.dropPiece(position, CFServerGame.RED)); //get move and do it, send back success
+                    outputStreamRed.writeObject(position);
+                    outputStreamRed.writeObject(CFServerGame.RED);
 
                 } catch (IOException e) {
                     System.out.println("Failed to receive move/send status." + e.getMessage());
+                } catch (ClassNotFoundException ignored) {
                 }
 
             } else if (currentTurn == CFServerGame.BLACK && game.status() == CFServerGame.PLAYING) {
@@ -110,13 +111,14 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
 
                 try {
                     outputStreamBlack.writeObject("Black's turn, waiting for you.");
-                    int position = inputStreamBlack.readInt();
-                    outputStreamBlack.writeBoolean(game.dropPiece(position, CFServerGame.BLACK)); //get move and do it, send back success
-                    outputStreamBlack.writeInt(position);
-                    outputStreamBlack.writeInt(CFServerGame.BLACK);
+                    int position = (int) inputStreamBlack.readObject();
+                    outputStreamBlack.writeObject(game.dropPiece(position, CFServerGame.BLACK)); //get move and do it, send back success
+                    outputStreamBlack.writeObject(position);
+                    outputStreamBlack.writeObject(CFServerGame.BLACK);
 
                 } catch (IOException e) {
                     System.out.println("Failed to receive move/send status." + e.getMessage());
+                } catch (ClassNotFoundException ignored) {
                 }
             }
         }
