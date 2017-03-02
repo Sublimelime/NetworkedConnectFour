@@ -89,16 +89,21 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
         //flips back and forth between recieving and sending client info.
 
         while (true) {
+            repaint();
             if (currentTurn == CFServerGame.RED && game.status() == CFServerGame.PLAYING) {
                 System.out.println("Current turn is red. Waiting for red move.");
                 currentTurn = CFServerGame.BLACK;
                 try {
                     outputStreamRed.writeObject("Red's turn, waiting for you.");
                     int position = (int) inputStreamRed.readObject();
-                    System.out.println("Got position.");
+                    System.out.println("Got the red move, " + position + ", sending back success and the move to make on the client.");
+
                     outputStreamRed.writeObject(game.dropPiece(position, CFServerGame.RED)); //get move and do it, send back success
                     outputStreamRed.writeObject(position);
                     outputStreamRed.writeObject(CFServerGame.RED);
+
+                    //send the opponent's move
+                    outputStreamBlack.writeObject(Short.parseShort("" + position));
 
                 } catch (IOException e) {
                     System.out.println("Failed to receive move/send status." + e.getMessage());
@@ -112,6 +117,7 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
                 try {
                     outputStreamBlack.writeObject("Black's turn, waiting for you.");
                     int position = (int) inputStreamBlack.readObject();
+                    System.out.println("Got the black move, " + position + ", sending back success and the move to make on the client.");
                     outputStreamBlack.writeObject(game.dropPiece(position, CFServerGame.BLACK)); //get move and do it, send back success
                     outputStreamBlack.writeObject(position);
                     outputStreamBlack.writeObject(CFServerGame.BLACK);
