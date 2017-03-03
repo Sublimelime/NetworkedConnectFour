@@ -11,7 +11,6 @@ import javax.swing.JFrame;
 
 public class CFServerFrame extends JFrame implements MouseListener, Runnable {
 
-    private int mode = 0, turn = 0;
     private CFServerGame game;
     private BufferedImage buffer;
 
@@ -26,13 +25,12 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
 
         super("Connect Four Game - Server");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.mode = mode;
         setSize(440, 400);
         setResizable(false);
         buffer = new BufferedImage(440, 400, BufferedImage.TYPE_4BYTE_ABGR);
         game = new CFServerGame();
-        this.mode = mode;
-        turn = CFServerGame.RED;
+        currentTurn = CFServerGame.RED;
+        addMouseListener(this);
 
         setVisible(true);
 
@@ -104,6 +102,7 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
 
                     //send the opponent's move
                     outputStreamBlack.writeObject(Short.parseShort("" + position));
+                    outputStreamBlack.writeObject(CFServerGame.RED);
 
                 } catch (IOException e) {
                     System.out.println("Failed to receive move/send status." + e.getMessage());
@@ -121,6 +120,10 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
                     outputStreamBlack.writeObject(game.dropPiece(position, CFServerGame.BLACK)); //get move and do it, send back success
                     outputStreamBlack.writeObject(position);
                     outputStreamBlack.writeObject(CFServerGame.BLACK);
+
+                    //send the opponent's move
+                    outputStreamRed.writeObject(Short.parseShort("" + position));
+                    outputStreamRed.writeObject(CFServerGame.BLACK);
 
                 } catch (IOException e) {
                     System.out.println("Failed to receive move/send status." + e.getMessage());
@@ -203,9 +206,16 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
     }
 
     public void mouseReleased(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON3) {
-            turn = CFServerGame.RED;
+        if (e.getButton() == MouseEvent.BUTTON3 && game.status() != CFServerGame.PLAYING) {
+            currentTurn = CFServerGame.RED;
             game = new CFServerGame();
+            Short s = new Short("-1");
+            try {
+                outputStreamBlack.writeObject(s);
+
+                outputStreamRed.writeObject(s);
+            } catch (IOException ignored) {
+            }
         }
         repaint();
     }

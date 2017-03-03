@@ -10,7 +10,7 @@ import javax.swing.JFrame;
 
 public class CFClientFrame extends JFrame implements MouseListener, Runnable {
 
-    private int mode = 0, turn = 0, lastMove = -1;
+    private int lastMove = -1;
     private CFClientGame game;
     private BufferedImage buffer;
 
@@ -24,13 +24,10 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
 
         super("Connect Four Game - Client");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.mode = mode;
         setSize(440, 400);
         setResizable(false);
         buffer = new BufferedImage(440, 400, BufferedImage.TYPE_4BYTE_ABGR);
         game = new CFClientGame();
-        this.mode = mode;
-        turn = CFClientGame.RED;
 
         addMouseListener(this);
         setVisible(true);
@@ -63,6 +60,8 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
         t.start();
     }
 
+    boolean myTurn = false;
+
     @Override
     public void run() {
         //flips back and forth between recieving and sending client info.
@@ -75,6 +74,7 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
                 Object received = inputStream.readObject();
                 if (received instanceof String) {
                     System.out.println(received.toString());
+                    myTurn = true;
                 } else if (received instanceof Boolean) {
                     System.out.println("Got back a boolean.");
                     if (received.equals(Boolean.TRUE)) {
@@ -84,8 +84,14 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
                     }
                     continue;
                 } else if (received instanceof Short) {
+                    if (Short.parseShort("" + received) < 0) {
+                        game = new CFClientGame();
+                        repaint();
+                        continue;
+                    }
+                    repaint();
                     System.out.println("Got the opponent move," + received.toString());
-                    game.dropPiece((int) inputStream.readObject(), (int) inputStream.readObject());
+                    game.dropPiece(Integer.parseInt("" + received), (int) inputStream.readObject());
                     repaint();
                     continue;
                 }
@@ -97,7 +103,7 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
                 outputStream.writeObject(lastMove);
                 lastMove = -1; //invalidate the var again
                 System.out.println("Move made, sent back to server.");
-
+                myTurn = false;
             } catch (IOException e) {
                 System.err.println("Failed to send or receive message to/from server." + e.getMessage());
             } catch (ClassNotFoundException ignored) {
@@ -162,6 +168,9 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
 
     public void mouseReleased(MouseEvent e) {
 
+        if (!myTurn) {
+            return;
+        }
         int x = e.getX();
         if (game.status() == CFClientGame.PLAYING) {
             System.out.println("Click received");
