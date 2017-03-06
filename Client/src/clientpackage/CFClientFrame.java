@@ -60,13 +60,14 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
         t.start();
     }
 
-    boolean myTurn = false;
+    boolean myTurn = false, gameWasReset = false;
 
     @Override
     public void run() {
         //flips back and forth between recieving and sending client info.
 
         while (true) {
+            gameWasReset = false;
 
             try {
                 System.out.println("Waiting for message from server...");
@@ -98,7 +99,17 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
 
                 System.out.println("Waiting for the player to make a move.");
                 while (lastMove == -1) { //wait for the player to make a move
+                    if (game.status() == CFClientGame.BLACK_WINS || game.status() == CFClientGame.RED_WINS || game.status() == CFClientGame.DRAW) {
+                        System.out.println("Game ended, aborting.");
+                        gameWasReset = true;
+                        break;
+                    }
                     Thread.sleep(10);
+                }
+                if (gameWasReset) { //todo problem with this
+                    myTurn = false;
+
+                    continue;
                 }
                 outputStream.writeObject(lastMove);
                 lastMove = -1; //invalidate the var again
@@ -106,6 +117,7 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
                 myTurn = false;
             } catch (IOException e) {
                 System.err.println("Failed to send or receive message to/from server." + e.getMessage());
+                e.printStackTrace();
             } catch (ClassNotFoundException ignored) {
             } catch (InterruptedException i) {
                 System.err.println("Cannot sleep thread. " + i.getMessage());
