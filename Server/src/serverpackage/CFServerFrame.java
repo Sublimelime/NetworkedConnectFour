@@ -213,7 +213,6 @@ public class CFServerFrame extends JFrame implements MouseListener, Runnable {
             try {
                 outputStreamBlack.writeObject(s);
                 outputStreamRed.writeObject(s);
-                outputStreamRed.writeObject("Red's turn, waiting for you.");
 
             } catch (IOException ignored) {
             }

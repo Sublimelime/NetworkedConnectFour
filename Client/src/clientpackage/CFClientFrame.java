@@ -92,7 +92,8 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
                     }
                     repaint();
                     System.out.println("Got the opponent move," + received.toString());
-                    game.dropPiece(Integer.parseInt("" + received), (int) inputStream.readObject());
+                    game.dropPiece(Integer.parseInt("" + received), (int) inputStream.readObject()); //todo don't cast to int
+
                     repaint();
                     continue;
                 }
@@ -106,9 +107,8 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
                     }
                     Thread.sleep(10);
                 }
-                if (gameWasReset) { //todo problem with this
+                if (gameWasReset) {
                     myTurn = false;
-
                     continue;
                 }
                 outputStream.writeObject(lastMove);
