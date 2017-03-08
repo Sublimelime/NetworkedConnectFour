@@ -80,7 +80,7 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
                     System.out.println("Got back a boolean.");
                     if (received.equals(Boolean.TRUE)) {
                         System.out.println("Drop was successful.");
-                        game.dropPiece((int) inputStream.readObject(), (int) inputStream.readObject()); //get two ints, place and person
+                        game.dropPiece(Integer.parseInt("" + inputStream.readObject()), Integer.parseInt("" + inputStream.readObject())); //get two ints, place and person
                         repaint();
                     }
                     continue;
@@ -92,7 +92,7 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
                     }
                     repaint();
                     System.out.println("Got the opponent move," + received.toString());
-                    game.dropPiece(Integer.parseInt("" + received), (int) inputStream.readObject()); //todo don't cast to int
+                    game.dropPiece(Integer.parseInt("" + received), Integer.parseInt("" + inputStream.readObject())); //todo don't cast to int
 
                     repaint();
                     continue;
