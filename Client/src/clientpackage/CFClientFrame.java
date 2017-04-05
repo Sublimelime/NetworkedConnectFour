@@ -14,8 +14,8 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
     private CFClientGame game;
     private BufferedImage buffer;
 
-    public static final int ONE_PLAYER = 1;
-    public static final int TWO_PLAYER = 2;
+    public static final int ONE_PLAYER = 1, TWO_PLAYER = 2;
+    private static String playerColor = "";
     ObjectInputStream inputStream;
     ObjectOutputStream outputStream;
     Socket socket;
@@ -24,9 +24,9 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
 
         super("Connect Four Game - Client");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(440, 400);
+        setSize(440, 500);
         setResizable(false);
-        buffer = new BufferedImage(440, 400, BufferedImage.TYPE_4BYTE_ABGR);
+        buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
         game = new CFClientGame();
 
         addMouseListener(this);
@@ -49,6 +49,7 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
             String returned = inputStream.readObject().toString();
             System.out.println("Got ping from server: " + returned);
             setTitle(getTitle() + " - " + returned);
+            playerColor = returned;
             outputStream.writeObject("Polo"); //send it back polo
         } catch (IOException e) {
             System.err.println("Unable to ping server: " + e.getMessage());
@@ -132,43 +133,59 @@ public class CFClientFrame extends JFrame implements MouseListener, Runnable {
         // draws background to the buffer
         Graphics g = buffer.getGraphics();
         g.setColor(Color.YELLOW);
-        g.fillRect(0, 0, 440, 400);
+        g.fillRect(0, 0, getWidth(), getHeight());
 
         for (int r = 0; r < 6; r++) {
             for (int c = 0; c < 7; c++) {
                 int dr = r * 60 + 40;
                 int dc = c * 60 + 20;
 
-                if (game.getSpot(r, c) == CFClientGame.RED) {
-                    g.setColor(Color.RED);
-                    g.fillOval(dc, dr, 40, 40);
-                } else if (game.getSpot(r, c) == CFClientGame.BLACK) {
-                    g.setColor(Color.BLACK);
-                    g.fillOval(dc, dr, 40, 40);
-                } else {
-                    g.setColor(Color.WHITE);
-                    g.fillOval(dc, dr, 40, 40);
+                switch (game.getSpot(r, c)) {
+                    case CFClientGame.RED:
+                        g.setColor(Color.RED);
+                        g.fillOval(dc, dr, 40, 40);
+                        break;
+                    case CFClientGame.BLACK:
+                        g.setColor(Color.BLACK);
+                        g.fillOval(dc, dr, 40, 40);
+                        break;
+                    default:
+                        g.setColor(Color.WHITE);
+                        g.fillOval(dc, dr, 40, 40);
+                        break;
                 }
             }
         }
 
-        if (game.status() == CFClientGame.RED_WINS) {
-            g.setColor(Color.BLUE);
-            g.setFont(new Font("Courier New", Font.BOLD, 25));
-            g.drawString("RED WINS!", 20, 200);
-            g.drawString("(RIGHT CLICK TO RESTART)", 20, 250);
-        } else if (game.status() == CFClientGame.BLACK_WINS) {
-            g.setColor(Color.BLUE);
-            g.setFont(new Font("Courier New", Font.BOLD, 25));
-            g.drawString("BLACK WINS!", 20, 200);
-            g.drawString("(RIGHT CLICK TO RESTART)", 20, 250);
+        switch (game.status()) {
+            case CFClientGame.RED_WINS:
+                g.setColor(Color.BLUE);
+                g.setFont(new Font("Courier New", Font.BOLD, 25));
+                g.drawString("RED WINS!", 20, 200);
+                g.drawString("(RIGHT CLICK TO RESTART)", 20, 250);
+                break;
+            case CFClientGame.BLACK_WINS:
+                g.setColor(Color.BLUE);
+                g.setFont(new Font("Courier New", Font.BOLD, 25));
+                g.drawString("BLACK WINS!", 20, 200);
+                g.drawString("(RIGHT CLICK TO RESTART)", 20, 250);
+                break;
+            case CFClientGame.DRAW:
+                g.setColor(Color.BLUE);
+                g.setFont(new Font("Courier New", Font.BOLD, 25));
+                g.drawString("TIE GAME.", 20, 200);
+                g.drawString("(RIGHT CLICK TO RESTART)", 20, 250);
+                break;
+            default:
+                break;
+        }
 
-        } else if (game.status() == CFClientGame.DRAW) {
-            g.setColor(Color.BLUE);
-            g.setFont(new Font("Courier New", Font.BOLD, 25));
-            g.drawString("TIE GAME.", 20, 200);
-            g.drawString("(RIGHT CLICK TO RESTART)", 20, 250);
-
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Courier New", Font.BOLD, 20));
+        if (myTurn) {
+            g.drawString("My Turn!", 10, 420);
+        } else {
+            g.drawString("Opponent's turn.", 10, 420);
         }
 
         rg.drawImage(buffer, 0, 0, null);
